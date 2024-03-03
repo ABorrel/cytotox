@@ -70,7 +70,7 @@ class processBurtsAssays:
         for cell in l_cells:
             d_out[cell] = {}
 
-            p_in = self.p_dir_out + cell + ".csv"
+            p_in = self.p_dir_out + "extracted/" + cell + ".csv"
             df_cell = pd.read_csv(p_in)
 
             nb_chemical = len(df_cell['casn'].unique())
@@ -84,9 +84,6 @@ class processBurtsAssays:
             d_out[cell]['nb_inactive_recod'] = nb_inactive
             d_out[cell]['avg_AC50'] = avg_AC50
             d_out[cell]['nb_different_assays'] = nb_different_assays
-
-
-
 
             nb_act_inact = 0
             nb_act = 0
@@ -103,11 +100,9 @@ class processBurtsAssays:
                 else:
                     nb_inact = nb_inact + 1
                 
-
             d_out[cell]['nb_chem_act_inact'] = nb_act_inact
             d_out[cell]['nb_chem_act'] = nb_act
             d_out[cell]['nb_chem_inact'] = nb_inact
-        
         
         p_summary = self.p_dir_out + "summary.csv"
         f_summary = open(p_summary, "w")
