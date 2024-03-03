@@ -65,7 +65,7 @@ pathManager.create_folder(p_dir_modeling)
 c_modeling = runRegModeling.runRegModeling(p_dataset, p_dir_modeling)
 c_modeling.format_dataset_for_modeling()
 
-c_modeling.run_undersampling(run=10, type_model="Xboost", ratio_inact=0.5)
+c_modeling.run_undersampling(run=10, type_model="Xboost", ratio_inact=0.4)
 
 #c_modeling.run_Xboost()
 
