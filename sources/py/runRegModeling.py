@@ -114,7 +114,7 @@ class runRegModeling:
         i = 0
         l_model = []
         while i < run:
-            df_inact_sampled = df_inact.sample(n=nb_inact)
+            df_inact_sampled = df_inact.sample(n=int(nb_inact))
             df_train = pd.concat([df_act, df_inact_sampled], axis=0)
 
             self.X_train = df_train.drop(columns=['Log AC50', 'Class'])

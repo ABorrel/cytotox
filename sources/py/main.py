@@ -31,12 +31,12 @@ p_burst_assays = PDIR_INPUT + "cytotox_assay_burst1.csv"
 # MAIN
 ########
 
-#p_dir_burst_pred = pathManager.create_folder(PDIR_OUTPUT + "burst_prep/")
-#c_prep = processBurtsAssays.processBurtsAssays(p_burst_assays, p_dir_burst_pred)
-#c_prep.extract()
-#c_prep.process_for_modeling()
-#c_prep.by_cell_summary()
-
+p_dir_burst_pred = pathManager.create_folder(PDIR_OUTPUT + "burst_prep/")
+c_prep = processBurtsAssays.processBurtsAssays(p_burst_assays, p_dir_burst_pred)
+c_prep.extract()
+c_prep.process_for_modeling()
+c_prep.by_cell_summary()
+sss
 
 # prep chemical
 p_chem = PDIR_INPUT + "chemicals.csv"
