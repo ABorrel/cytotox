@@ -31,22 +31,22 @@ p_burst_assays = PDIR_INPUT + "cytotox_assay_burst1.csv"
 # MAIN
 ########
 
-p_dir_burst_pred = pathManager.create_folder(PDIR_OUTPUT + "burst_prep/")
-c_prep = processBurtsAssays.processBurtsAssays(p_burst_assays, p_dir_burst_pred)
-c_prep.extract()
-c_prep.process_for_modeling()
-c_prep.by_cell_summary()
+#p_dir_burst_pred = pathManager.create_folder(PDIR_OUTPUT + "burst_prep/")
+#c_prep = processBurtsAssays.processBurtsAssays(p_burst_assays, p_dir_burst_pred)
+#c_prep.extract()
+#c_prep.process_for_modeling()
+#c_prep.by_cell_summary()
 
 
 # prep chemical
 p_chem = PDIR_INPUT + "chemicals.csv"
-p_dir_chem = pathManager.create_folder(PDIR_OUTPUT + "chem_prep/")
-c_chem = processChem.processChem(p_chem, p_dir_chem)
-c_chem.computeDesc()
+#p_dir_chem = pathManager.create_folder(PDIR_OUTPUT + "chem_prep/")
+#c_chem = processChem.processChem(p_chem, p_dir_chem)
+#c_chem.computeDesc()
 
 # build dataset
-cBuild = buildDatasets.buildDatasets(p_chem, PDIR_OUTPUT + "chem_prep/desc.csv", PDIR_OUTPUT + "burst_prep/formated/", PDIR_OUTPUT)
-cBuild.build_all()
+#cBuild = buildDatasets.buildDatasets(p_chem, PDIR_OUTPUT + "chem_prep/desc.csv", PDIR_OUTPUT + "burst_prep/formated/", PDIR_OUTPUT)
+#cBuild.build_all()
 
 
 p_dataset = PDIR_OUTPUT + "datasets/HepG2__24.csv"
