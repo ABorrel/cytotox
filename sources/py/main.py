@@ -37,6 +37,7 @@ c_prep.extract()
 c_prep.process_for_modeling()
 c_prep.by_cell_summary()
 
+
 # prep chemical
 p_chem = PDIR_INPUT + "chemicals.csv"
 p_dir_chem = pathManager.create_folder(PDIR_OUTPUT + "chem_prep/")
