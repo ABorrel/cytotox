@@ -50,32 +50,22 @@ cBuild.build_all()
 
 
 
-############ HEPG2
+#### dataset
 p_dataset = PDIR_OUTPUT + "datasets/HepG2__24.csv"
-p_dir_modeling = PDIR_OUTPUT + "modeling/"
-pathManager.create_folder(p_dir_modeling)
-
-c_modeling = runRegModeling.runRegModeling(p_dataset, "Xboost", p_dir_modeling)
-c_modeling.format_dataset_for_modeling()
-c_modeling.run_undersampling(run=10, ratio_inact=0.3)
-
-c_modeling = runRegModeling.runRegModeling(p_dataset, "RF", p_dir_modeling)
-c_modeling.format_dataset_for_modeling()
-c_modeling.run_undersampling(run=10, ratio_inact=0.3)
-
-
-############ HEK
 p_dataset = PDIR_OUTPUT + "datasets/HEK293__24.csv"
+
+type_model = "Xboost"
+type_model = "RF"
+
+
 p_dir_modeling = PDIR_OUTPUT + "modeling/"
 pathManager.create_folder(p_dir_modeling)
 
-c_modeling = runRegModeling.runRegModeling(p_dataset, "Xboost", p_dir_modeling)
+c_modeling = runRegModeling.runRegModeling(p_dataset, type_model, p_dir_modeling)
 c_modeling.format_dataset_for_modeling()
 c_modeling.run_undersampling(run=10, ratio_inact=0.3)
 
-c_modeling = runRegModeling.runRegModeling(p_dataset, "RF", p_dir_modeling)
-c_modeling.format_dataset_for_modeling()
-c_modeling.run_undersampling(run=10, ratio_inact=0.3)
+
 
 
 

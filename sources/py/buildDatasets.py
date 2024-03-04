@@ -1,5 +1,5 @@
 import pandas as pd
-from os import listdir
+from os import listdir, path
 import pathManager
 
 
@@ -16,6 +16,11 @@ class buildDatasets:
         """
         Build the dataset
         """
+        
+        p_out = self.p_dir_set + p_target.split("/")[-1]
+        if path.exists(p_out):
+            return
+        
         # read chemical
         df_chem = pd.read_csv(self.p_chemical)
         df_chem.drop_duplicates(subset=['INPUT'], keep='first', inplace=True)

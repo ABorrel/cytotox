@@ -77,9 +77,16 @@ class runRegModeling:
         # write
         df_dataset.to_csv(self.p_dir_by_dataset + "formated.csv", index=False)
 
+        
+        # dirty split
+        df_dataset_0 = df_dataset[df_dataset["Class"] == 0]
+        df_dataset_1 = df_dataset[df_dataset["Class"] == 1]
+        df_train_0, df_test_0 = train_test_split(df_dataset_0, test_size=0.25)
+        df_train_1, df_test_1 = train_test_split(df_dataset_1, test_size=0.25)
 
-        # split train / test
-        df_train, df_test = train_test_split(df_dataset, test_size=0.25)
+        df_test = pd.concat([df_test_0, df_test_1], axis=0)
+        df_train = pd.concat([df_train_0, df_train_1], axis=0)
+
         df_train.to_csv(self.p_dir_by_dataset + "train.csv", index=False)
         df_test.to_csv(self.p_dir_by_dataset + "test.csv", index=False)
 
@@ -115,6 +122,9 @@ class runRegModeling:
         while i < run:
             df_inact_sampled = df_inact.sample(n=int(nb_inact))
             df_train = pd.concat([df_act, df_inact_sampled], axis=0)
+
+            # save sampling
+            df_train.to_csv(self.p_dir_by_dataset + "train_undersampling_" + str(i) + ".csv", index=False)
 
             self.X_train = df_train.drop(columns=['Log AC50', 'Class'])
             self.Y_train = df_train['Log AC50']
