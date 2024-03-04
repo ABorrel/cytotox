@@ -65,7 +65,7 @@ class runRegModeling:
         self.max_ac50 = max_ac50
         self.min_ac50 = df_dataset["Log AC50"].min()
         self.inact_val =  10*self.max_ac50
-        #self.inact_val =  -10*self.min_ac50
+        self.inact_val =  -10*self.min_ac50
 
 
         df_dataset["Class"] = 1
@@ -165,7 +165,7 @@ class runRegModeling:
 
         y_train_pred = df_pred_train['mean']
         y_train_pred_recalibrated = ML_toolbox.calibrate_prediction(y_train_pred, self.max_ac50, self.min_ac50, self.inact_val)
-        df_pred_train = ML_toolbox.performance(self.Y_test, y_train_pred_recalibrated, "regression", p_filout=self.p_dir_by_dataset + "train_undersampling_performance.csv")
+        df_pred_train = ML_toolbox.performance(self.Y_train, y_train_pred_recalibrated, "regression", p_filout=self.p_dir_by_dataset + "train_undersampling_performance.csv")
 
     def run_Xboost(self):
 
