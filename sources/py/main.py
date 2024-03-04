@@ -36,7 +36,7 @@ c_prep = processBurtsAssays.processBurtsAssays(p_burst_assays, p_dir_burst_pred)
 c_prep.extract()
 c_prep.process_for_modeling()
 c_prep.by_cell_summary()
-sss
+
 
 # prep chemical
 p_chem = PDIR_INPUT + "chemicals.csv"
@@ -45,8 +45,8 @@ p_chem = PDIR_INPUT + "chemicals.csv"
 #c_chem.computeDesc()
 
 # build dataset
-#cBuild = buildDatasets.buildDatasets(p_chem, PDIR_OUTPUT + "chem_prep/desc.csv", PDIR_OUTPUT + "burst_prep/formated/", PDIR_OUTPUT)
-#cBuild.build_all()
+cBuild = buildDatasets.buildDatasets(p_chem, PDIR_OUTPUT + "chem_prep/desc.csv", PDIR_OUTPUT + "burst_prep/formated/", PDIR_OUTPUT)
+cBuild.build_all()
 
 
 p_dataset = PDIR_OUTPUT + "datasets/HepG2__24.csv"
