@@ -49,25 +49,23 @@ p_chem = PDIR_INPUT + "chemicals.csv"
 #cBuild.build_all()
 
 
-p_dataset = "C:/Users/aborrel/work/CIS_419/output/datasets/HepG2__24.csv"
-p_dir_modeling = PDIR_OUTPUT + "modeling/"
-pathManager.create_folder(p_dir_modeling)
-
-#c_modeling = runRegModeling.runRegModeling(p_dataset, p_dir_modeling)
-#c_modeling.format_dataset_for_modeling()
-#c_modeling.run_Xboost()
-
-
-p_dataset = "C:/Users/aborrel/work/CIS_419/output/datasets/HEK293__24.csv"
+p_dataset = PDIR_OUTPUT + "datasets/HepG2__24.csv"
 p_dir_modeling = PDIR_OUTPUT + "modeling/"
 pathManager.create_folder(p_dir_modeling)
 
 c_modeling = runRegModeling.runRegModeling(p_dataset, p_dir_modeling)
 c_modeling.format_dataset_for_modeling()
-
 c_modeling.run_undersampling(run=10, type_model="Xboost", ratio_inact=0.4)
 
-#c_modeling.run_Xboost()
+
+p_dataset = PDIR_OUTPUT + "datasets/HEK293__24.csv"
+p_dir_modeling = PDIR_OUTPUT + "modeling/"
+pathManager.create_folder(p_dir_modeling)
+
+c_modeling = runRegModeling.runRegModeling(p_dataset, p_dir_modeling)
+c_modeling.format_dataset_for_modeling()
+c_modeling.run_undersampling(run=10, type_model="Xboost", ratio_inact=0.4)
+
 
 
 
