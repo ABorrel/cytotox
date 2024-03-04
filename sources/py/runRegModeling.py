@@ -9,20 +9,19 @@ from skopt import gp_minimize
 from skopt.utils import use_named_args
 from sklearn.model_selection import cross_val_score
 from skopt.plots import plot_convergence
+from sklearn.ensemble import RandomForestRegressor
 import ML_toolbox
 
 class runRegModeling:
 
-    def __init__(self, p_dataset, p_dir_out):
+    def __init__(self, p_dataset, type_model, p_dir_out):
 
         self.p_dataset = p_dataset
         self.p_dir_out = p_dir_out
+        self.type_model = type_model
 
         # create folder by dataset
-        self.p_dir_by_dataset = pathManager.create_folder(p_dir_out + self.p_dataset.split("/")[-1][:-4] + "/")
-
-        pass
-
+        self.p_dir_by_dataset = pathManager.create_folder(p_dir_out + self.p_dataset.split("/")[-1][:-4] + "__" + str(type_model) + "/")
 
     def remove_correlated_desc(self, df_in, threshold=0.8):
 
@@ -44,7 +43,6 @@ class runRegModeling:
         df_desc_coor = df_in[high_corr.columns[col_to_filter_out]]
 
         return df_desc_coor
-
 
     def format_dataset_for_modeling(self):
             
@@ -101,9 +99,7 @@ class runRegModeling:
         self.X_test = self.df_test.drop(columns=['Log AC50'])
         self.X_test = self.X_test.drop(columns=['Class'])
 
-
-
-    def run_undersampling(self, run=10, type_model="Xboost", ratio_inact=0.5):
+    def run_undersampling(self, run=10, ratio_inact=0.5):
 
         nb_act = len(self.df_train[self.df_train["Class"] == 1])
         df_act = self.df_train[self.df_train["Class"] == 1]
@@ -121,17 +117,27 @@ class runRegModeling:
             self.Y_train = df_train['Log AC50']
 
             # run the model
-            model = self.run_Xboost()
+            if self.type_model == "Xboost":
+                model = self.run_Xboost()
+            elif self.type_model == "RF":
+                model = self.run_RF()
             l_model.append(model)
             i = i + 1
 
 
         df_pred_test = pd.DataFrame()
         for model in l_model:
+           
+           # predict on the test
             y_test_pred = model.predict(self.X_test)
             df_pred_test = pd.concat([df_pred_test, pd.DataFrame(y_test_pred)], axis=1)
 
+            #predict on the train
+            y_train_pred = model.predict(self.X_train)
+            df_pred_train = pd.concat([df_pred_test, pd.DataFrame(y_test_pred)], axis=1)
 
+
+        # test
         df_pred_test['mean'] = df_pred_test.mean(axis=1)
         df_pred_test.to_csv(self.p_dir_by_dataset + "test_undersampling_pred.csv", index=False)
 
@@ -139,7 +145,13 @@ class runRegModeling:
         y_test_pred_recalibrated = ML_toolbox.calibrate_prediction(y_test_pred, self.max_ac50, self.min_ac50, self.inact_val)
         df_pred_test = ML_toolbox.performance(self.Y_test, y_test_pred_recalibrated, "regression", p_filout=self.p_dir_by_dataset + "test_undersampling_performance.csv")
 
+        # train
+        df_pred_train['mean'] = df_pred_train.mean(axis=1)
+        df_pred_train.to_csv(self.p_dir_by_dataset + "train_undersampling_pred.csv", index=False)
 
+        y_train_pred = df_pred_train['mean']
+        y_train_pred_recalibrated = ML_toolbox.calibrate_prediction(y_train_pred, self.max_ac50, self.min_ac50, self.inact_val)
+        df_pred_train = ML_toolbox.performance(self.Y_test, y_train_pred_recalibrated, "regression", p_filout=self.p_dir_by_dataset + "train_undersampling_performance.csv")
 
     def run_Xboost(self):
 
@@ -192,23 +204,55 @@ class runRegModeling:
 
         return final_model
 
-
-        #apply on test
-        y_test_pred = final_model.predict(self.X_test[self.X_train.columns])
+    def run_RF(self):
 
 
-        y_train_pred_recalibrated = ML_toolbox.calibrate_prediction(y_train_pred, self.max_ac50, self.min_ac50, self.inact_val)
-        y_test_pred_recalibrated = ML_toolbox.calibrate_prediction(y_test_pred, self.max_ac50, self.min_ac50, self.inact_val)
+        model = RandomForestRegressor(n_jobs=-1)
+        space_RandomForestRegressor = [
+            Categorical(categories=['sqrt', "log2"], name="max_features"),
+            Integer(1, 4, name="max_depth"),
+            Integer(2, 10, name="min_samples_split"),
+            Integer(2, 10, name="min_samples_leaf"),
+            Integer(10, 50, name="n_estimators")
+        ]
 
 
-        df_pred_train = ML_toolbox.performance(self.Y_train, y_train_pred_recalibrated, "regression", p_filout=self.p_dir_by_dataset + "train_pred.csv")
-        df_pred_test = ML_toolbox.performance(self.Y_test, y_test_pred_recalibrated, "regression", p_filout=self.p_dir_by_dataset + "test_pred.csv")
+        #optimize the modeling
+        @use_named_args(space_RandomForestRegressor)
+        def objective(**params):
+            model.set_params(**params)
 
-        print(df_pred_test)
+            model.fit(self.X_train, self.Y_train)
+            y_train_pred = model.predict(self.X_train)
+            y_train_pred_recalibrated = ML_toolbox.calibrate_prediction(y_train_pred, self.max_ac50, self.min_ac50, self.inact_val)
+            df_pred_train = ML_toolbox.performance(self.Y_train, y_train_pred_recalibrated, "regression")
+
+            #print(df_pred_train)
+
+            #retry a CV 5 fold
+            #l_pref = cross_val_score(model, self.X_train, self.Y_train, cv=10, scoring='r2')
+            #print(l_pref)
+
+
+            #return -np.mean(l_pref)
+
+            return -df_pred_train["R2"][0]
+
+        res_gp = gp_minimize(objective, space_RandomForestRegressor, n_calls=100, random_state=0)
+
+        print("Best score=%.4f" % res_gp.fun)
+        print(res_gp.x)
+
+
+        #plot_convergence(res_gp)
+        final_model = RandomForestRegressor(max_features=res_gp.x[0], max_depth=res_gp.x[1], min_samples_split=res_gp.x[2], min_samples_leaf=res_gp.x[3], n_estimators=res_gp.x[4])
+        
+
+        # apply on the train
+        final_model.fit(self.X_train, self.Y_train)
+        y_train_pred = final_model.predict(self.X_train)
 
         return final_model
 
-
-        # need to add the CV
 
 
