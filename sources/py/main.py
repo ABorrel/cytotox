@@ -27,6 +27,13 @@ p_burst_assays = PDIR_INPUT + "cytotox_assay_burst1.csv"
 
 
 
+def run_modeling(p_dataset,type_model,  p_dir_modeling):
+    
+    c_modeling = runRegModeling.runRegModeling(p_dataset, type_model, p_dir_modeling)
+    c_modeling.format_dataset_for_modeling()
+    c_modeling.run_undersampling(run=10, ratio_inact=0.3)
+
+
 ####
 # MAIN
 ########
@@ -51,19 +58,15 @@ cBuild.build_all()
 
 
 #### dataset
-p_dataset = PDIR_OUTPUT + "datasets/HepG2__24.csv"
-p_dataset = PDIR_OUTPUT + "datasets/HEK293__24.csv"
-
-type_model = "Xboost"
-type_model = "RF"
-
-
 p_dir_modeling = PDIR_OUTPUT + "modeling/"
 pathManager.create_folder(p_dir_modeling)
 
-c_modeling = runRegModeling.runRegModeling(p_dataset, type_model, p_dir_modeling)
-c_modeling.format_dataset_for_modeling()
-c_modeling.run_undersampling(run=10, ratio_inact=0.3)
+
+run_modeling(PDIR_OUTPUT + "datasets/HepG2__24.csv", "Xboost",  p_dir_modeling)
+run_modeling(PDIR_OUTPUT + "datasets/HepG2__24.csv", "RF",  p_dir_modeling)
+run_modeling(PDIR_OUTPUT + "datasets/HEK293__24.csv", "Xboost",  p_dir_modeling)
+run_modeling(PDIR_OUTPUT + "datasets/HEK293__24.csv", "RF",  p_dir_modeling)
+
 
 
 
