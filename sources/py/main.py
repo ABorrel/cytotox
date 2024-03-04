@@ -51,10 +51,10 @@ cBuild.build_all()
 
 
 #### dataset
-p_dataset = PDIR_OUTPUT + "datasets/HepG2__24.csv"
+#p_dataset = PDIR_OUTPUT + "datasets/HepG2__24.csv"
 p_dataset = PDIR_OUTPUT + "datasets/HEK293__24.csv"
 
-type_model = "Xboost"
+#type_model = "Xboost"
 type_model = "RF"
 
 
