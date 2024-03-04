@@ -65,7 +65,7 @@ class runRegModeling:
         self.max_ac50 = max_ac50
         self.min_ac50 = df_dataset["Log AC50"].min()
         self.inact_val =  10*self.max_ac50
-        self.inact_val =  -10*self.min_ac50
+        #self.inact_val =  -10*self.min_ac50
 
 
         df_dataset["Class"] = 1
@@ -105,7 +105,10 @@ class runRegModeling:
         df_act = self.df_train[self.df_train["Class"] == 1]
         df_inact = self.df_train[self.df_train["Class"] == 0]
 
-        nb_inact = nb_act * (ratio_inact + 0.5)
+        if ratio_inact >= 0.5:
+            nb_inact = nb_act * (ratio_inact + 0.5)
+        else:
+            nb_inact = nb_act * (1 - ratio_inact)
 
         i = 0
         l_model = []
@@ -126,6 +129,7 @@ class runRegModeling:
 
 
         df_pred_test = pd.DataFrame()
+        df_pred_train = pd.DataFrame()
         for model in l_model:
            
            # predict on the test
@@ -134,7 +138,7 @@ class runRegModeling:
 
             #predict on the train
             y_train_pred = model.predict(self.X_train)
-            df_pred_train = pd.concat([df_pred_test, pd.DataFrame(y_test_pred)], axis=1)
+            df_pred_train = pd.concat([df_pred_train, pd.DataFrame(y_train_pred)], axis=1)
 
 
         # test
