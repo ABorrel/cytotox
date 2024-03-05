@@ -31,12 +31,18 @@ def run_modeling(p_dataset,type_model,  p_dir_modeling):
     
     c_modeling = runRegModeling.runRegModeling(p_dataset, type_model, p_dir_modeling)
     c_modeling.format_dataset_for_modeling()
-    c_modeling.run_undersampling(run=10, ratio_inact=0.3)
+    c_modeling.run_undersampling(run=20, ratio_inact=0)
 
 
 ####
 # MAIN
 ########
+
+#import mappingTier1
+
+#cMapTier = mappingTier1.mappingTier1(PDIR_INPUT + "cHTSMT_ALL.xlsx", "", p_burst_assays, PDIR_OUTPUT)
+#cMapTier.mapping_on_burst()
+
 
 p_dir_burst_pred = pathManager.create_folder(PDIR_OUTPUT + "burst_prep/")
 c_prep = processBurtsAssays.processBurtsAssays(p_burst_assays, p_dir_burst_pred)

@@ -11,6 +11,8 @@ from sklearn.model_selection import cross_val_score
 from skopt.plots import plot_convergence
 from sklearn.ensemble import RandomForestRegressor
 import ML_toolbox
+import random
+
 
 class runRegModeling:
 
@@ -108,18 +110,24 @@ class runRegModeling:
 
     def run_undersampling(self, run=10, ratio_inact=0.5):
 
-        nb_act = len(self.df_train[self.df_train["Class"] == 1])
-        df_act = self.df_train[self.df_train["Class"] == 1]
-        df_inact = self.df_train[self.df_train["Class"] == 0]
-
-        if ratio_inact >= 0.5:
-            nb_inact = nb_act * (ratio_inact + 0.5)
-        else:
-            nb_inact = nb_act * (1 - ratio_inact)
 
         i = 0
         l_model = []
         while i < run:
+
+            nb_act = len(self.df_train[self.df_train["Class"] == 1])
+            df_act = self.df_train[self.df_train["Class"] == 1]
+            df_inact = self.df_train[self.df_train["Class"] == 0]
+
+            if ratio_inact == 0:
+                ratio_inact = random.uniform(0, 1)
+
+            if ratio_inact >= 0.5:
+                nb_inact = nb_act * (ratio_inact + 0.5)
+            else:
+                nb_inact = nb_act * (1 - ratio_inact)
+
+
             df_inact_sampled = df_inact.sample(n=int(nb_inact))
             df_train = pd.concat([df_act, df_inact_sampled], axis=0)
 
